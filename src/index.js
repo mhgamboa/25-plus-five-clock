@@ -1,21 +1,48 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import store from './app/store';
-import { Provider } from 'react-redux';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+
+import { createStore, combineReducers } from "redux";
+import { Provider, connect } from "react-redux";
+
+// Start Redux
+const reducer1 = (state = "hello", action) => {
+  switch (action.type) {
+    default:
+      return state;
+  }
+};
+const rootReducer = combineReducers({
+  reducer1,
+});
+
+const store = createStore(rootReducer);
+
+//Start React
+class App extends React.Component {
+  render() {
+    console.log(this.props);
+    return (
+      <div className="base">
+        <div className="configureSections">
+          <h1>{this.props.propName}</h1>
+          <h1>hi</h1>
+        </div>
+        <h1>Timer</h1>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = (state) => ({
+  propName: state.reducer1,
+});
+
+const ConnectedApp = connect(mapStateToProps)(App);
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  <Provider store={store}>
+    <ConnectedApp />
+  </Provider>,
+  document.querySelector("#root")
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
