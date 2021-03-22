@@ -1,3 +1,4 @@
+/* Base Layout */
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 * {
@@ -24,4 +25,21 @@
   justify-content: space-around;
   
   background: green;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Timer */
+.timerContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 100px;
+
+  border: solid black 2px;
+  border-radius: 10px;
 }
