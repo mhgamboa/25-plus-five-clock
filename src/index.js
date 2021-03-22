@@ -13,6 +13,7 @@ const DECREMENT = "DECREMENT";
 const timerInitialState = {
   sessionTime: 25,
   breakTime: 5,
+  count: 0,
 };
 
 const timerReducer = (state = timerInitialState, action) => {
@@ -49,16 +50,29 @@ class App extends React.Component {
     return (
       <div className="base">
         <div className="configureSections">
-          <h1>{this.props.sessionTime}</h1>
-          <h1>Break</h1>
+          {/* Section to Configure Session Length */}
+          <div className="setTimeContainer">
+            <h1>Session Length</h1>
+            <h2>{this.props.sessionTime}</h2>
+            <div className="timerButtonsContainer">
+              <button onClick={this.props.addSessionTime}>+</button>
+              <button onClick={this.props.subtractSessionTime}>-</button>
+            </div>
+          </div>
+          {/* Section to Configure Break Length */}
+          <div className="setTimeContainer">
+            <h1>Break Length</h1>
+            <h2>{this.props.breakTime}</h2>
+            <div className="timerButtonsContainer">
+              <button onClick={this.props.addSessionTime}>+</button>
+              <button onClick={this.props.subtractSessionTime}>-</button>
+            </div>
+          </div>
         </div>
         <div className="timerContainer">
           <h1>This is a timer</h1>
           <h2>{this.props.sessionTime}</h2>
-          <div>
-            <button onClick={this.props.addSessionTime}>+</button>
-            <button onClick={this.props.subtractSessionTime}>-</button>
-          </div>
+          <div className="timerButtonsContainer"></div>
         </div>
       </div>
     );
@@ -67,6 +81,7 @@ class App extends React.Component {
 
 const mapStateToPropsApp = (state) => ({
   sessionTime: state.timerReducer.sessionTime,
+  breakTime: state.timerReducer.breakTime,
 });
 
 const mapDispatchToPropsApp = (dispatch) =>
