@@ -2,8 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 
-import { createStore, combineReducers, bindActionCreators } from "redux";
+import { createStore, combineReducers, applyMiddleware } from "redux";
 import { Provider, connect } from "react-redux";
+import thunkMiddleware from "redux-thunk";
 
 /* Start Redux */
 const INCREMENT = "INCREMENT";
@@ -51,28 +52,32 @@ class App extends React.Component {
       <div className="base">
         <div className="configureSections">
           {/* Section to Configure Session Length */}
-          <div className="setTimeContainer">
-            <h1>Session Length</h1>
+          <div className="sessionAndBreakContainers">
+            <h3>Session Length</h3>
             <h2>{this.props.sessionTime}</h2>
-            <div className="timerButtonsContainer">
+            <div>
               <button onClick={this.props.addSessionTime}>+</button>
               <button onClick={this.props.subtractSessionTime}>-</button>
             </div>
           </div>
           {/* Section to Configure Break Length */}
-          <div className="setTimeContainer">
-            <h1>Break Length</h1>
+          <div className="sessionAndBreakContainers">
+            <h3>Break Length</h3>
             <h2>{this.props.breakTime}</h2>
-            <div className="timerButtonsContainer">
+            <div>
               <button onClick={this.props.addSessionTime}>+</button>
               <button onClick={this.props.subtractSessionTime}>-</button>
             </div>
           </div>
         </div>
+        {/* Countdown Timer */}
         <div className="timerContainer">
           <h1>This is a timer</h1>
           <h2>{this.props.sessionTime}</h2>
-          <div className="timerButtonsContainer"></div>
+          <div className="timerButtonsContainer">
+            <button className="playPauseButton">Play/Pause</button>
+            <button className="resetButton">Reset</button>
+          </div>
         </div>
       </div>
     );
@@ -84,8 +89,7 @@ const mapStateToPropsApp = (state) => ({
   breakTime: state.timerReducer.breakTime,
 });
 
-const mapDispatchToPropsApp = (dispatch) =>
-  bindActionCreators({ addSessionTime, subtractSessionTime }, dispatch);
+const mapDispatchToPropsApp = { addSessionTime, subtractSessionTime };
 
 const ConnectedApp = connect(mapStateToPropsApp, mapDispatchToPropsApp)(App);
 
