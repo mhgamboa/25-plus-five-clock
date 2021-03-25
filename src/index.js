@@ -62,10 +62,12 @@ class Timer extends React.Component {
     return (
       <div className="timerContainer">
         <h1 id="timer-label">{this.props.currentTimerType} Time</h1>
-        <h2>
+        <h2 id="time-left">
           <span className="currentMinute">
             {this.props.currentTimerType === "Session"
-              ? this.props.currentMinute
+              ? this.props.currentMinute < 10
+                ? `0${this.props.currentMinute}`
+                : this.props.currentMinute
               : this.props.InitialBreakLength}
           </span>
           <span>:</span>
@@ -123,7 +125,16 @@ class App extends React.Component {
 
   playFunction = () => {
     this.runTimer = setInterval(() => {
-      this.setState((state) => ({ currentSecond: state.currentSecond + 1 }));
+      if ((this.state.currentSecond === 0) & (this.state.currentMinute === 0)) {
+        console.log("done");
+      } else if (this.state.currentSecond === 0) {
+        this.setState((state) => ({
+          currentSecond: 59,
+          currentMinute: state.currentMinute - 1,
+        }));
+      } else {
+        this.setState((state) => ({ currentSecond: state.currentSecond - 1 }));
+      }
     }, 1000);
 
     this.setState((state) => ({
@@ -133,10 +144,11 @@ class App extends React.Component {
 
   //Initializes all state
   resetFunction = () => {
+    clearInterval(this.runTimer);
     this.setState({
       initialSessionLength: 25,
       initialBreakLength: 5,
-      currentTimerType: "session",
+      currentTimerType: "Session",
       isPlaying: false,
       currentMinute: 25,
       currentSecond: 0,
