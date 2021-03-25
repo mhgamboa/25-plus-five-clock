@@ -61,10 +61,29 @@ class Timer extends React.Component {
   render() {
     return (
       <div className="timerContainer">
-        <h1 id="timer-label">{this.props.currentTimer}</h1>
-        <h2>{this.props.sessionLength}</h2>
+        <h1 id="timer-label">{this.props.currentTimerType} Time</h1>
+        <h2>
+          <span className="currentMinute">
+            {this.props.currentTimerType === "Session"
+              ? this.props.currentMinute
+              : this.props.InitialBreakLength}
+          </span>
+          <span>:</span>
+          <span className="currentSeccond">
+            {this.props.currentSecond < 10
+              ? `0${this.props.currentSecond}`
+              : this.props.currentSecond}
+          </span>
+        </h2>
         <div className="timerButtonsContainer">
-          <button id="start_stop" onClick={this.props.playPauseFunction}>
+          <button
+            id="start_stop"
+            onClick={
+              this.props.isPlaying
+                ? this.props.pauseFunction
+                : this.props.playFunction
+            }
+          >
             Play/Pause
           </button>
           <button
@@ -85,91 +104,109 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      sessionLength: 25,
-      runningClock: 25,
-      breakLength: 5,
-      currentTimer: "Session",
+      initialSessionLength: 25,
+      initialBreakLength: 5,
+      currentTimerType: "Session",
+      isPlaying: false,
+      currentMinute: 25,
+      currentSecond: 0,
     };
-    this.increaseSessionLength = this.increaseSessionLength.bind(this);
-    this.decreaseSessionLength = this.decreaseSessionLength.bind(this);
-    this.resetFunction = this.resetFunction.bind(this);
-    this.playPauseFunction = this.playPauseFunction.bind(this);
   }
+
+  pauseFunction = () => {
+    clearInterval(this.runTimer);
+
+    this.setState((state) => ({
+      isPlaying: !state.isPlaying,
+    }));
+  };
+
+  playFunction = () => {
+    this.runTimer = setInterval(() => {
+      this.setState((state) => ({ currentSecond: state.currentSecond + 1 }));
+    }, 1000);
+
+    this.setState((state) => ({
+      isPlaying: !state.isPlaying,
+    }));
+  };
+
+  //Initializes all state
+  resetFunction = () => {
+    this.setState({
+      initialSessionLength: 25,
+      initialBreakLength: 5,
+      currentTimerType: "session",
+      isPlaying: false,
+      currentMinute: 25,
+      currentSecond: 0,
+    });
+  };
   // Function to increase Session/Breaktime
   increaseSessionLength = (e) => {
     let sessionType = e.target.dataset.session;
-    if (sessionType === "session") {
-      if (this.state.sessionLength <= 59) {
-        this.setState((state) => ({
-          sessionLength: state.sessionLength + 1,
-        }));
-      }
-    } else if (sessionType === "break") {
-      if (this.state.breakLength <= 59) {
-        this.setState((state) => ({
-          breakLength: state.breakLength + 1,
-        }));
+    if (!this.state.isPlaying) {
+      if (sessionType === "session") {
+        if (this.state.initialSessionLength <= 59) {
+          this.setState((state) => ({
+            initialSessionLength: state.initialSessionLength + 1,
+            currentMinute: state.initialSessionLength + 1,
+            currentSecond: 0,
+          }));
+        }
+      } else if (sessionType === "break") {
+        if (this.state.initialBreakLength <= 59) {
+          this.setState((state) => ({
+            initialBreakLength: state.initialBreakLength + 1,
+          }));
+        }
       }
     }
   };
   // Function to decrease Session/Breaktime
   decreaseSessionLength = (e) => {
     let sessionType = e.target.dataset.session;
-    if (sessionType === "session") {
-      if (this.state.sessionLength > 1) {
-        this.setState((state) => ({
-          sessionLength: state.sessionLength - 1,
-        }));
-      }
-    } else if (sessionType === "break") {
-      if (this.state.breakLength > 1) {
-        this.setState((state) => ({
-          breakLength: state.breakLength - 1,
-        }));
+    if (!this.state.isPlaying) {
+      if (sessionType === "session") {
+        if (this.state.initialSessionLength > 1) {
+          this.setState((state) => ({
+            initialSessionLength: state.initialSessionLength - 1,
+            currentMinute: state.initialSessionLength - 1,
+            currentSecond: 0,
+          }));
+        }
+      } else if (sessionType === "break") {
+        if (this.state.initialBreakLength > 1) {
+          this.setState((state) => ({
+            initialBreakLength: state.initialBreakLength - 1,
+          }));
+        }
       }
     }
   };
-  // Function to reset Session time to 25 minutes and break time to 5 minutes
-  resetFunction = () => {
-    this.setState({
-      sessionLength: 25,
-      runningClock: 25,
-      breakLength: 5,
-    });
-  };
-  //Toggles Play/Pause
-  playPauseFunction = () => {
-    setInterval(
-      () =>
-        this.setState((state) => ({
-          sessionLength: state.sessionLength + 1,
-        })),
-      1000
-    );
-  };
-
   render() {
-    let sessionLength = this.state.sessionLength;
-    let breakLength = this.state.breakLength;
     return (
       <div className="base">
         <div className="configureSections">
           <AdjustTimeContainer
-            sessionLength={sessionLength}
+            sessionLength={this.state.initialSessionLength}
             increaseSessionLength={this.increaseSessionLength}
             decreaseSessionLength={this.decreaseSessionLength}
           />
           <AdjustBreakContainer
-            sessionLength={breakLength}
+            sessionLength={this.state.initialBreakLength}
             increaseSessionLength={this.increaseSessionLength}
             decreaseSessionLength={this.decreaseSessionLength}
           />
         </div>
         <Timer
-          sessionLength={this.state.sessionLength}
+          currentMinute={this.state.currentMinute}
+          currentSecond={this.state.currentSecond}
+          currentTimerType={this.state.currentTimerType}
           resetFunction={this.resetFunction}
-          playPauseFunction={this.playPauseFunction}
-          currentTimer={this.state.currentTimer}
+          playFunction={this.playFunction}
+          pauseFunction={this.pauseFunction}
+          isPlaying={this.state.isPlaying}
         />
       </div>
     );
@@ -177,5 +214,4 @@ class App extends React.Component {
 }
 
 /* Render */
-
 ReactDOM.render(<App />, document.querySelector("#root"));
