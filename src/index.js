@@ -64,11 +64,9 @@ class Timer extends React.Component {
         <h1 id="timer-label">{this.props.currentTimerType} Time</h1>
         <h2 id="time-left">
           <span className="currentMinute">
-            {this.props.currentTimerType === "Session"
-              ? this.props.currentMinute < 10
-                ? `0${this.props.currentMinute}`
-                : this.props.currentMinute
-              : this.props.InitialBreakLength}
+            {this.props.currentMinute < 10
+              ? `0${this.props.currentMinute}`
+              : this.props.currentMinute}
           </span>
           <span>:</span>
           <span className="currentSeccond">
@@ -125,8 +123,23 @@ class App extends React.Component {
 
   playFunction = () => {
     this.runTimer = setInterval(() => {
+      // When Timer Ends
       if ((this.state.currentSecond === 0) & (this.state.currentMinute === 0)) {
-        console.log("done");
+        // Play the Audio
+        this.audioBeep.play();
+        // If we are in a Session switch to Break when the timer ends
+        if (this.state.currentTimerType === "Session") {
+          this.setState({
+            currentTimerType: "Break",
+            currentMinute: this.state.initialBreakLength,
+          });
+          // If we are in a Break switch to Session when the timer ends
+        } else {
+          this.setState({
+            currentTimerType: "Session",
+            currentMinute: this.state.initialSessionLength,
+          });
+        }
       } else if (this.state.currentSecond === 0) {
         this.setState((state) => ({
           currentSecond: 59,
@@ -145,6 +158,8 @@ class App extends React.Component {
   //Initializes all state
   resetFunction = () => {
     clearInterval(this.runTimer);
+    this.audioBeep.pause();
+    this.audioBeep.currentTime = 0;
     this.setState({
       initialSessionLength: 25,
       initialBreakLength: 5,
@@ -220,6 +235,13 @@ class App extends React.Component {
           pauseFunction={this.pauseFunction}
           isPlaying={this.state.isPlaying}
         />
+        <audio
+          id="beep"
+          src="https://freesound.org/data/previews/202/202029_2605156-lq.mp3"
+          ref={(audio) => {
+            this.audioBeep = audio;
+          }}
+        ></audio>
       </div>
     );
   }

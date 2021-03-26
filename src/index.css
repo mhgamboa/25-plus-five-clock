@@ -50,6 +50,7 @@ button {
 
   width: 33%;
   min-width: 150px;
+  height: 200px;
 
   border: solid var(--border-color) 2px;
   border-radius: 10px;
@@ -66,9 +67,11 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;  
+  align-items: center;
 
-  /* padding: 100px; */
+  width: 33%;
+  min-width: 220px;
+  height: 200px;
 
   border: solid var(--border-color) 2px;
   border-radius: 10px;
